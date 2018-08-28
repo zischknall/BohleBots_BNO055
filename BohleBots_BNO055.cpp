@@ -54,6 +54,7 @@ bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise
 
 void BNO::saveOffsets()	//saves offset structure into eeprom at byte 100 upwards
 {
+	getOffsets(&_offsetData);
 	EEPROM.put(100, _offsetData);
 }
 
@@ -118,6 +119,38 @@ void BNO::writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value)	//writes b
 	Wire.write(regaddr);
 	Wire.write(value);
 	Wire.endTransmission();
+}
+
+void BNO::getOffsets(struct calibOffsets *ptr)
+{
+	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
+  
+	ptr->acc_x = readRegister(BNO_ADDR, ACC_OFFSET_X_MSB_ADDR)<<8;
+	ptr->acc_x += readRegister(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR);
+	ptr->acc_y = readRegister(BNO_ADDR, ACC_OFFSET_Y_MSB_ADDR)<<8;
+	ptr->acc_y += readRegister(BNO_ADDR, ACC_OFFSET_Y_LSB_ADDR);
+	ptr->acc_z = readRegister(BNO_ADDR, ACC_OFFSET_Z_MSB_ADDR)<<8;
+	ptr->acc_z += readRegister(BNO_ADDR, ACC_OFFSET_Z_LSB_ADDR);
+  
+	ptr->mag_x = readRegister(BNO_ADDR, MAG_OFFSET_X_MSB_ADDR)<<8;
+	ptr->mag_x += readRegister(BNO_ADDR, MAG_OFFSET_X_LSB_ADDR);
+	ptr->mag_y = readRegister(BNO_ADDR, MAG_OFFSET_Y_MSB_ADDR)<<8;
+	ptr->mag_y += readRegister(BNO_ADDR, MAG_OFFSET_Y_LSB_ADDR);
+	ptr->mag_z = readRegister(BNO_ADDR, MAG_OFFSET_Z_MSB_ADDR)<<8;
+	ptr->mag_z += readRegister(BNO_ADDR, MAG_OFFSET_Z_LSB_ADDR);
+  
+	ptr->gyr_x = readRegister(BNO_ADDR, GYR_OFFSET_X_MSB_ADDR)<<8;
+	ptr->gyr_x += readRegister(BNO_ADDR, GYR_OFFSET_X_LSB_ADDR);
+	ptr->gyr_y = readRegister(BNO_ADDR, GYR_OFFSET_Y_MSB_ADDR)<<8;
+	ptr->gyr_y += readRegister(BNO_ADDR, GYR_OFFSET_Y_LSB_ADDR);
+	ptr->gyr_z = readRegister(BNO_ADDR, GYR_OFFSET_Z_MSB_ADDR)<<8;
+	ptr->gyr_z += readRegister(BNO_ADDR, GYR_OFFSET_Z_LSB_ADDR);
+
+	ptr->acc_rad = readRegister(BNO_ADDR, ACC_RADIUS_MSB_ADDR)<<8;
+	ptr->acc_rad += readRegister(BNO_ADDR, ACC_RADIUS_LSB_ADDR);
+
+	ptr->mag_rad = readRegister(BNO_ADDR, MAG_RADIUS_MSB_ADDR)<<8;
+	ptr->mag_rad += readRegister(BNO_ADDR, MAG_RADIUS_LSB_ADDR);
 }
 
 void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure into the compass

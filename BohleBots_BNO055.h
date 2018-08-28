@@ -127,6 +127,7 @@ class BNO
 		uint8_t readRegister(uint8_t addr, uint8_t regaddr);
 		void writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value);
 		void setOffsets(struct calibOffsets *ptr);
+		void getOffsets(struct calibOffsets *ptr);
 		void getCalibStat(struct calibStat *ptr);
 };
 #endif
