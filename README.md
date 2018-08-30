@@ -7,6 +7,8 @@
 
 `isCalibrated()` returns true if everything on the BNO055 is on the highest calibration level.
 
+`serialPrintCalibStat()` prints the current calibration levels via serial. Established serial connection required.
+
 `saveOffsets()` gets current offset data from BNO055 and saves it to EEPROM at address 100 upwards. Offset data consists of 22 bytes.
 
 `loadOffsets()` gets offset data saved in EEPROM at address 100 upwards and writes it to the BNO055.
