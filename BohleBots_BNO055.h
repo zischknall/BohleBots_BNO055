@@ -73,7 +73,7 @@ class BNO
 		bool isCalibrated();
 		void saveOffsets();
 		void loadOffsets();
-		void startBNO();
+		void startBNO(uint8_t impact, bool forward);
 		void serialPrintCalibStat();
 	private:
 		struct sysInfo

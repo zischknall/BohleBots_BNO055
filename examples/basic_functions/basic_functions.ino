@@ -9,7 +9,7 @@ void setup()
   Wire.setClock(400000);  //set I2C to fast mode at 400kHz
   Serial.begin(115200); //Begin Serial Communication for debugging
   while(!Serial);	//wait for a serial connection being fully established
-  bno.startBNO(); //enables high_g interrupts and puts the compass into fusion output mode NDOF
+  bno.startBNO(200, false); //enables high_g interrupts and puts the compass into fusion output mode NDOF. First parameter controls the threshold for the interrupt (0-255), the second one enables Int pin forwarding.
   while(!bno.isCalibrated())	//Wait until everything is fully calibrated once....
   {
   bno.serialPrintCalibStat();
