@@ -5,3 +5,4 @@ isCalibrated	KEYWORD2
 saveOffsets	KEYWORD2
 loadOffsets	KEYWORD2
 startBNO	KEYWORD2
+serialPrintCalibStat	KEYWORD2
