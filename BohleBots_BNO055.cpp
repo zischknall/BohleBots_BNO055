@@ -73,7 +73,7 @@ void BNO::loadOffsets()	//loads offsets structure from eeprom at byte 100 upward
 	setOffsets(&_offsetData);
 }
 
-void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
+void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
 {
 	//Enable High-G Interrupt
 	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
@@ -85,7 +85,14 @@ void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF f
 	writeRegister(BNO_ADDR, INT_MSK_ADDR, B00000000);
 	writeRegister(BNO_ADDR, ACC_INT_Settings_ADDR, B01100000);
 	writeRegister(BNO_ADDR, ACC_HG_DURATION_ADDR, 1);
-	writeRegister(BNO_ADDR, ACC_HG_THRES_ADDR, 200);
+	writeRegister(BNO_ADDR, ACC_HG_THRES_ADDR, impact);
+	if(forward)
+	{
+	       	writeRegister(BNO_ADDR, INT_MSK_ADDR, B00100000);
+	}else
+	{
+		writeRegister(BNO_ADDR, INT_MSK_ADDR, B00000000);
+	}
 
 	//Change Operation mode
 	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
@@ -93,7 +100,7 @@ void BNO::startBNO()	//enables High_g Interrupt and puts the Compass into NDOF f
 	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_NDOF);
 	delay(19);
 
-	 uint8_t sysStatus = readRegister(BNO_ADDR, SYS_STATUS_ADDR);
+	uint8_t sysStatus = readRegister(BNO_ADDR, SYS_STATUS_ADDR);
 	if(sysStatus != 5)
 	{
 		Serial.print("SYS_STATUS:\t");  Serial.println(sysStatus, DEC);
