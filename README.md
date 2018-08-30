@@ -13,9 +13,9 @@
 
 `loadOffsets()` gets offset data saved in EEPROM at address 100 upwards and writes it to the BNO055.
 
-**REQUIRED** `startBNO()` enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode.
+**REQUIRED** `startBNO(uint8_t impact, bool forward)` enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode. Impact accepts an integer from 0-255 and regulates the threshold for the impact detection. Forward accepts a bool and enables interrupt pin forwarding when true.
 
 ## TO-DO
-- [ ] Add interrupt pin forwarding
+- [x ] Add interrupt pin forwarding
 - [ ] Add heading relative to a point
 - [ ] Customisable EEPROM address
