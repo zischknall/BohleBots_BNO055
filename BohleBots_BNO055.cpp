@@ -35,8 +35,8 @@ int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs
 
 	int16_t heading = 0;
 	heading = readRegister(BNO_ADDR, EUL_HEADING_MSB_ADDR)<<8;
-	heading =+ readRegister(BNO_ADDR, EUL_HEADING_LSB_ADDR);
-	return heading;
+	heading += readRegister(BNO_ADDR, EUL_HEADING_LSB_ADDR);
+	return (heading/16)+1;
 }
 
 bool BNO::getImpact()	//reads the INT_STA Register to check if a High_G event occurred
