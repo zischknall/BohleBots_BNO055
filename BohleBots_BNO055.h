@@ -74,6 +74,7 @@ class BNO
 		void saveOffsets();
 		void loadOffsets();
 		void startBNO();
+		void serialPrintCalibStat();
 	private:
 		struct sysInfo
 		{

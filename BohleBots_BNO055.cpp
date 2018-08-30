@@ -52,6 +52,15 @@ bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise
 	return false;
 }
 
+void BNO::serialPrintCalibStat()	//gets the latest calibration values and prints them via serial
+{
+	getCalibStat(&_calibData);
+	Serial.print("CALIB_STAT_SYSTEM:\t");  Serial.println(_calibData.sys, DEC);
+	Serial.print("CALIB_STAT_GYR:\t");  Serial.println(_calibData.gyr, DEC);
+	Serial.print("CALIB_STAT_ACC:\t");  Serial.println(_calibData.acc, DEC);
+	Serial.print("CALIB_STAT_MAG:\t");  Serial.println(_calibData.mag, DEC);
+}
+
 void BNO::saveOffsets()	//saves offset structure into eeprom at byte 100 upwards
 {
 	getOffsets(&_offsetData);

@@ -10,7 +10,11 @@ void setup()
   Serial.begin(115200); //Begin Serial Communication for debugging
   while(!Serial);	//wait for a serial connection being fully established
   bno.startBNO(); //enables high_g interrupts and puts the compass into fusion output mode NDOF
-  while(!bno.isCalibrated()); //Wait until everything is fully calibrated once....
+  while(!bno.isCalibrated())	//Wait until everything is fully calibrated once....
+  {
+  bno.serialPrintCalibStat();
+  delay(1000);
+  }
   Serial.println("Fully Calibrated!");  
   bno.saveOffsets();  //....then save the Offsets into the eeprom at byte 100 upwards 
 }
