@@ -16,7 +16,7 @@ void setup()
   delay(1000);
   }
   Serial.println("Fully Calibrated!");  
-  bno.saveOffsets();  //....then save the Offsets into the eeprom at byte 100 upwards 
+  bno.saveOffsets(100);  //....then save the Offsets into the eeprom at the specified address 
 }
 
 void loop() 
@@ -24,7 +24,7 @@ void loop()
   if(bno.getImpact())
   {
     Serial.println("Impact Detected!");
-    bno.loadOffsets();  //if a high_g interrupt occured reload the calibration values from the eeprom
+    bno.loadOffsets(100);  //if a high_g interrupt occured reload the calibration values from the eeprom
   }
   Serial.println(bno.getHeading(), DEC);  //give out the current heading
   delay(1000);

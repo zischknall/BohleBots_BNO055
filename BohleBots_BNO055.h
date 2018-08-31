@@ -71,8 +71,8 @@ class BNO
 		int16_t getHeading();
 		bool getImpact();
 		bool isCalibrated();
-		void saveOffsets();
-		void loadOffsets();
+		void saveOffsets(unsigned int address);
+		void loadOffsets(unsigned int address);
 		void startBNO(uint8_t impact, bool forward);
 		void serialPrintCalibStat();
 	private:

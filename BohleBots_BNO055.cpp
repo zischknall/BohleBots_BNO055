@@ -61,15 +61,15 @@ void BNO::serialPrintCalibStat()	//gets the latest calibration values and prints
 	Serial.print("CALIB_STAT_MAG:\t");  Serial.println(_calibData.mag, DEC);
 }
 
-void BNO::saveOffsets()	//saves offset structure into eeprom at byte 100 upwards
+void BNO::saveOffsets(unsigned int address)	//saves offset structure into eeprom at byte 100 upwards
 {
 	getOffsets(&_offsetData);
-	EEPROM.put(100, _offsetData);
+	EEPROM.put(address, _offsetData);
 }
 
-void BNO::loadOffsets()	//loads offsets structure from eeprom at byte 100 upwards and loads the offsets onto the compass
+void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eeprom at byte 100 upwards and loads the offsets onto the compass
 {
-	EEPROM.get(100, _offsetData);
+	EEPROM.get(address, _offsetData);
 	setOffsets(&_offsetData);
 }
 
