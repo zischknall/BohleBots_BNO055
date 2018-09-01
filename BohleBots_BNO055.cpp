@@ -108,6 +108,16 @@ void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and 
 	}
 }
 
+void BNO::setReference()
+{
+	_reference = getHeading();
+}
+
+int16_t BNO::getRelHeading()
+{
+
+}
+
 /***** Private Functions *****/
 
 void BNO::writePhase(uint8_t addr, uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
