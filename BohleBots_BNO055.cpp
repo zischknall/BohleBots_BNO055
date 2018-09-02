@@ -34,8 +34,7 @@ int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs
 	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
 
 	int16_t heading = 0;
-	heading = readRegister(BNO_ADDR, EUL_HEADING_MSB_ADDR)<<8;
-	heading += readRegister(BNO_ADDR, EUL_HEADING_LSB_ADDR);
+	heading = readRegister16(BNO_ADDR, EUL_HEADING_LSB_ADDR);
 	return (heading/16)+1;
 }
 
@@ -122,10 +121,21 @@ uint8_t BNO::readRegister(uint8_t addr, uint8_t regaddr)	//reads byte from a reg
 	uint8_t value = 0;
 	writePhase(addr, regaddr);
 	Wire.requestFrom((int)addr,1,true);
-	while(Wire.available())
-	{
-		value = Wire.read();
-	}
+	while(Wire.available() < 1);
+	value = Wire.read();
+	return value;
+}
+
+uint16_t BNO::readRegister16(uint8_t addr, uint8_t regaddr)
+{
+	uint16_t value = 0;
+	uint8_t tmp = 0;
+	writePhase(addr, regaddr);
+	Wire.requestFrom((int)addr,2,true);
+	while(Wire.available() < 2);
+	tmp = Wire.read();
+	value = Wire.read()<<8;
+	value += tmp;
 	return value;
 }
 

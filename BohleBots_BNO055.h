@@ -126,6 +126,7 @@ class BNO
 		} _offsetData;
 		void writePhase(uint8_t addr, uint8_t regaddr);
 		uint8_t readRegister(uint8_t addr, uint8_t regaddr);
+		uint16_t readRegister16(uint8_t addr, uint8_t regaddr);
 		void writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value);
 		void setOffsets(struct calibOffsets *ptr);
 		void getOffsets(struct calibOffsets *ptr);
