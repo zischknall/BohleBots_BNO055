@@ -113,9 +113,9 @@ void BNO::setReference()
 	_reference = getHeading();
 }
 
-int16_t BNO::getRelHeading()
+int16_t BNO::getRLHeading()
 {
-
+	return (((getHeading()-_reference)+180)%360)-180;
 }
 
 /***** Private Functions *****/
