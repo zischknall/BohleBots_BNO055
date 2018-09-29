@@ -76,7 +76,7 @@ class BNO
 		void startBNO(uint8_t impact, bool forward);
 		void serialPrintCalibStat();
 		void setReference();
-		int16_t getRelHeading();
+		int16_t getRLHeading();
 	private:
 		struct sysInfo
 		{

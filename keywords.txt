@@ -6,3 +6,5 @@ saveOffsets	KEYWORD2
 loadOffsets	KEYWORD2
 startBNO	KEYWORD2
 serialPrintCalibStat	KEYWORD2
+setReference	KEYWORD2
+getRLHeading	KEYWORD2
