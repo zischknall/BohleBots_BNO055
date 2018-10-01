@@ -15,7 +15,7 @@
 
 **REQUIRED** `startBNO(impact, forward)` enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode. Impact accepts an integer from 0-255 and regulates the threshold for the impact detection. Forward accepts a bool and enables interrupt pin forwarding when true.
 
-### Sice v1.1
+### New with v1.1
 `setReference()` saves the curren heading as a reference for the relative heading
 
 `getRLHeading()` outputs current heading relative to the reference point (from 180 to -180) as a 16-bit signed integer
