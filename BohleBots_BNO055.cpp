@@ -31,8 +31,6 @@ BNO::BNO()
 
 int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs the combined value
 {
-	writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
 	int16_t heading = 0;
 	heading = readRegister16(BNO_ADDR, EUL_HEADING_LSB_ADDR);
 	return (heading/16)+1;
@@ -40,7 +38,6 @@ int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs
 
 bool BNO::getImpact()	//reads the INT_STA Register to check if a High_G event occurred
 {
-	writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
 	return (readRegister(BNO_ADDR, INT_STA_ADDR)&B00100000)>>5;
 }
 
@@ -149,8 +146,6 @@ void BNO::writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value)	//writes b
 
 void BNO::getOffsets(struct calibOffsets *ptr)
 {
-	writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-  
 	ptr->acc_x = readRegister(BNO_ADDR, ACC_OFFSET_X_MSB_ADDR)<<8;
 	ptr->acc_x += readRegister(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR);
 	ptr->acc_y = readRegister(BNO_ADDR, ACC_OFFSET_Y_MSB_ADDR)<<8;
@@ -181,8 +176,6 @@ void BNO::getOffsets(struct calibOffsets *ptr)
 
 void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure into the compass
 {
-	writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
 	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
 
@@ -218,8 +211,6 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 
 void BNO::getCalibStat(struct calibStat *ptr)	//gets current calibration status
 {
-	writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
 	ptr->sys = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B11000000)>>6;
 	ptr->gyr = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B00110000)>>4;
 	ptr->acc = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B00001100)>>2;
