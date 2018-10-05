@@ -146,32 +146,59 @@ void BNO::writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value)	//writes b
 
 void BNO::getOffsets(struct calibOffsets *ptr)
 {
-	ptr->acc_x = readRegister(BNO_ADDR, ACC_OFFSET_X_MSB_ADDR)<<8;
-	ptr->acc_x += readRegister(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR);
-	ptr->acc_y = readRegister(BNO_ADDR, ACC_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->acc_y += readRegister(BNO_ADDR, ACC_OFFSET_Y_LSB_ADDR);
-	ptr->acc_z = readRegister(BNO_ADDR, ACC_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->acc_z += readRegister(BNO_ADDR, ACC_OFFSET_Z_LSB_ADDR);
-  
-	ptr->mag_x = readRegister(BNO_ADDR, MAG_OFFSET_X_MSB_ADDR)<<8;
-	ptr->mag_x += readRegister(BNO_ADDR, MAG_OFFSET_X_LSB_ADDR);
-	ptr->mag_y = readRegister(BNO_ADDR, MAG_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->mag_y += readRegister(BNO_ADDR, MAG_OFFSET_Y_LSB_ADDR);
-	ptr->mag_z = readRegister(BNO_ADDR, MAG_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->mag_z += readRegister(BNO_ADDR, MAG_OFFSET_Z_LSB_ADDR);
-  
-	ptr->gyr_x = readRegister(BNO_ADDR, GYR_OFFSET_X_MSB_ADDR)<<8;
-	ptr->gyr_x += readRegister(BNO_ADDR, GYR_OFFSET_X_LSB_ADDR);
-	ptr->gyr_y = readRegister(BNO_ADDR, GYR_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->gyr_y += readRegister(BNO_ADDR, GYR_OFFSET_Y_LSB_ADDR);
-	ptr->gyr_z = readRegister(BNO_ADDR, GYR_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->gyr_z += readRegister(BNO_ADDR, GYR_OFFSET_Z_LSB_ADDR);
+	uint8_t tmp = 0;
+	writePhase(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR);
+	Wire.requestFrom(BNO_ADDR, 22, true);
+	while(Wire.available() < 22);
 
-	ptr->acc_rad = readRegister(BNO_ADDR, ACC_RADIUS_MSB_ADDR)<<8;
-	ptr->acc_rad += readRegister(BNO_ADDR, ACC_RADIUS_LSB_ADDR);
+	//ACCEL OFFSETS
+	tmp = Wire.read();
+	ptr->acc_x = Wire.read()<<8;
+	ptr->acc_x += tmp;
 
-	ptr->mag_rad = readRegister(BNO_ADDR, MAG_RADIUS_MSB_ADDR)<<8;
-	ptr->mag_rad += readRegister(BNO_ADDR, MAG_RADIUS_LSB_ADDR);
+	tmp = Wire.read();
+	ptr->acc_y = Wire.read()<<8;
+	ptr->acc_y += tmp;
+
+	tmp = Wire.read();
+	ptr->acc_z = Wire.read()<<8;
+	ptr->acc_z += tmp;
+
+	//MAG OFFSETS
+	tmp = Wire.read();
+	ptr->mag_x = Wire.read()<<8;
+	ptr->mag_x += tmp;
+
+	tmp = Wire.read();
+	ptr->mag_y = Wire.read()<<8;
+	ptr->mag_y += tmp;
+
+	tmp = Wire.read();
+	ptr->mag_z = Wire.read()<<8;
+	ptr->mag_z += tmp;
+
+	//GYRO OFFSETS
+	tmp = Wire.read();
+	ptr->gyr_x = Wire.read()<<8; 
+	ptr->gyr_x += tmp;
+                             
+	tmp = Wire.read();
+	ptr->gyr_y = Wire.read()<<8;
+	ptr->gyr_y += tmp;
+                             
+	tmp = Wire.read();
+	ptr->gyr_z = Wire.read()<<8;
+	ptr->gyr_z += tmp;
+
+	//ACCEL RADIUS
+	tmp = Wire.read();
+	ptr->acc_rad = Wire.read()<<8;
+	ptr->acc_rad += tmp;
+
+	//MAG RADIUS
+	tmp = Wire.read();
+	ptr->mag_rad = Wire.read()<<8;
+	ptr->mag_rad += tmp;
 }
 
 void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure into the compass
