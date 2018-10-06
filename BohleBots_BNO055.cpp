@@ -238,8 +238,9 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 
 void BNO::getCalibStat(struct calibStat *ptr)	//gets current calibration status
 {
-	ptr->sys = (readRegister(CALIB_STAT_ADDR)&B11000000)>>6;
-	ptr->gyr = (readRegister(CALIB_STAT_ADDR)&B00110000)>>4;
-	ptr->acc = (readRegister(CALIB_STAT_ADDR)&B00001100)>>2;
-	ptr->mag = readRegister(CALIB_STAT_ADDR)&B00000011;
+	uint8_t tmp = readRegister(CALIB_STAT_ADDR);
+	ptr->sys = (tmp&B11000000)>>6;
+	ptr->gyr = (tmp&B00110000)>>4;
+	ptr->acc = (tmp&B00001100)>>2;
+	ptr->mag = tmp&B00000011;
 }
