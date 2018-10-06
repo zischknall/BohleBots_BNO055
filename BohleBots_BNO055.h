@@ -124,10 +124,10 @@ class BNO
 			int16_t acc_rad;
 			int16_t mag_rad;
 		} _offsetData;
-		void writePhase(uint8_t addr, uint8_t regaddr);
-		uint8_t readRegister(uint8_t addr, uint8_t regaddr);
-		uint16_t readRegister16(uint8_t addr, uint8_t regaddr);
-		void writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value);
+		void writePhase(uint8_t regaddr);
+		uint8_t readRegister(uint8_t regaddr);
+		uint16_t readRegister16(uint8_t regaddr);
+		void writeRegister(uint8_t regaddr, uint8_t value);
 		void setOffsets(struct calibOffsets *ptr);
 		void getOffsets(struct calibOffsets *ptr);
 		void getCalibStat(struct calibStat *ptr);
