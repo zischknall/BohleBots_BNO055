@@ -31,18 +31,14 @@ BNO::BNO()
 
 int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs the combined value
 {
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
 	int16_t heading = 0;
-	heading = readRegister(BNO_ADDR, EUL_HEADING_MSB_ADDR)<<8;
-	heading += readRegister(BNO_ADDR, EUL_HEADING_LSB_ADDR);
+	heading = readRegister16(EUL_HEADING_LSB_ADDR);
 	return (heading/16)+1;
 }
 
 bool BNO::getImpact()	//reads the INT_STA Register to check if a High_G event occurred
 {
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-	return (readRegister(BNO_ADDR, INT_STA_ADDR)&B00100000)>>5;
+	return (readRegister(INT_STA_ADDR)&B00100000)>>5;
 }
 
 bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise and to return a true if everything is fully calibrated
@@ -76,31 +72,31 @@ void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eepro
 void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
 {
 	//Enable High-G Interrupt
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_CONFIG);
+	writeRegister(PAGE_ID_ADDR, 0);
+	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 1) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 1);
+	writeRegister(PAGE_ID_ADDR, 1);
 
-	writeRegister(BNO_ADDR, INT_EN_ADDR, B00100000);
-	writeRegister(BNO_ADDR, INT_MSK_ADDR, B00000000);
-	writeRegister(BNO_ADDR, ACC_INT_Settings_ADDR, B01100000);
-	writeRegister(BNO_ADDR, ACC_HG_DURATION_ADDR, 1);
-	writeRegister(BNO_ADDR, ACC_HG_THRES_ADDR, impact);
+	writeRegister(INT_EN_ADDR, B00100000);
+	writeRegister(INT_MSK_ADDR, B00000000);
+	writeRegister(ACC_INT_Settings_ADDR, B01100000);
+	writeRegister(ACC_HG_DURATION_ADDR, 1);
+	writeRegister(ACC_HG_THRES_ADDR, impact);
 	if(forward)
 	{
-	       	writeRegister(BNO_ADDR, INT_MSK_ADDR, B00100000);
+	       	writeRegister(INT_MSK_ADDR, B00100000);
 	}else
 	{
-		writeRegister(BNO_ADDR, INT_MSK_ADDR, B00000000);
+		writeRegister(INT_MSK_ADDR, B00000000);
 	}
 
 	//Change Operation mode
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
+	writeRegister(PAGE_ID_ADDR, 0);
 
-	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_NDOF);
+	writeRegister(OPR_MODE_ADDR, OPR_MODE_NDOF);
 	delay(19);
 
-	uint8_t sysStatus = readRegister(BNO_ADDR, SYS_STATUS_ADDR);
+	uint8_t sysStatus = readRegister(SYS_STATUS_ADDR);
 	if(sysStatus != 5)
 	{
 		Serial.print("SYS_STATUS:\t");  Serial.println(sysStatus, DEC);
@@ -120,28 +116,39 @@ int16_t BNO::getRLHeading()
 
 /***** Private Functions *****/
 
-void BNO::writePhase(uint8_t addr, uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
+inline void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
 {
-	Wire.beginTransmission(addr);
+	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
 	Wire.endTransmission();
 }
 
-uint8_t BNO::readRegister(uint8_t addr, uint8_t regaddr)	//reads byte from a register
+inline uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 {
 	uint8_t value = 0;
-	writePhase(addr, regaddr);
-	Wire.requestFrom((int)addr,1,true);
-	while(Wire.available())
-	{
-		value = Wire.read();
-	}
+	writePhase(regaddr);
+	Wire.requestFrom(BNO_ADDR,1,true);
+	while(Wire.available() < 1);
+	value = Wire.read();
 	return value;
 }
 
-void BNO::writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value)	//writes byte to a register
+inline uint16_t BNO::readRegister16(uint8_t regaddr)
 {
-	Wire.beginTransmission(addr);
+	uint16_t value = 0;
+	uint8_t tmp = 0;
+	writePhase(regaddr);
+	Wire.requestFrom(BNO_ADDR,2,true);
+	while(Wire.available() < 2);
+	tmp = Wire.read();
+	value = Wire.read()<<8;
+	value += tmp;
+	return value;
+}
+
+inline void BNO::writeRegister(uint8_t regaddr, uint8_t value)	//writes byte to a register
+{
+	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
 	Wire.write(value);
 	Wire.endTransmission();
@@ -149,79 +156,101 @@ void BNO::writeRegister(uint8_t addr, uint8_t regaddr, uint8_t value)	//writes b
 
 void BNO::getOffsets(struct calibOffsets *ptr)
 {
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-  
-	ptr->acc_x = readRegister(BNO_ADDR, ACC_OFFSET_X_MSB_ADDR)<<8;
-	ptr->acc_x += readRegister(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR);
-	ptr->acc_y = readRegister(BNO_ADDR, ACC_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->acc_y += readRegister(BNO_ADDR, ACC_OFFSET_Y_LSB_ADDR);
-	ptr->acc_z = readRegister(BNO_ADDR, ACC_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->acc_z += readRegister(BNO_ADDR, ACC_OFFSET_Z_LSB_ADDR);
-  
-	ptr->mag_x = readRegister(BNO_ADDR, MAG_OFFSET_X_MSB_ADDR)<<8;
-	ptr->mag_x += readRegister(BNO_ADDR, MAG_OFFSET_X_LSB_ADDR);
-	ptr->mag_y = readRegister(BNO_ADDR, MAG_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->mag_y += readRegister(BNO_ADDR, MAG_OFFSET_Y_LSB_ADDR);
-	ptr->mag_z = readRegister(BNO_ADDR, MAG_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->mag_z += readRegister(BNO_ADDR, MAG_OFFSET_Z_LSB_ADDR);
-  
-	ptr->gyr_x = readRegister(BNO_ADDR, GYR_OFFSET_X_MSB_ADDR)<<8;
-	ptr->gyr_x += readRegister(BNO_ADDR, GYR_OFFSET_X_LSB_ADDR);
-	ptr->gyr_y = readRegister(BNO_ADDR, GYR_OFFSET_Y_MSB_ADDR)<<8;
-	ptr->gyr_y += readRegister(BNO_ADDR, GYR_OFFSET_Y_LSB_ADDR);
-	ptr->gyr_z = readRegister(BNO_ADDR, GYR_OFFSET_Z_MSB_ADDR)<<8;
-	ptr->gyr_z += readRegister(BNO_ADDR, GYR_OFFSET_Z_LSB_ADDR);
+	uint8_t tmp = 0;
+	writePhase(ACC_OFFSET_X_LSB_ADDR);
+	Wire.requestFrom(BNO_ADDR, 22, true);
+	while(Wire.available() < 22);
 
-	ptr->acc_rad = readRegister(BNO_ADDR, ACC_RADIUS_MSB_ADDR)<<8;
-	ptr->acc_rad += readRegister(BNO_ADDR, ACC_RADIUS_LSB_ADDR);
+	//ACCEL OFFSETS
+	tmp = Wire.read();
+	ptr->acc_x = Wire.read()<<8;
+	ptr->acc_x += tmp;
 
-	ptr->mag_rad = readRegister(BNO_ADDR, MAG_RADIUS_MSB_ADDR)<<8;
-	ptr->mag_rad += readRegister(BNO_ADDR, MAG_RADIUS_LSB_ADDR);
+	tmp = Wire.read();
+	ptr->acc_y = Wire.read()<<8;
+	ptr->acc_y += tmp;
+
+	tmp = Wire.read();
+	ptr->acc_z = Wire.read()<<8;
+	ptr->acc_z += tmp;
+
+	//MAG OFFSETS
+	tmp = Wire.read();
+	ptr->mag_x = Wire.read()<<8;
+	ptr->mag_x += tmp;
+
+	tmp = Wire.read();
+	ptr->mag_y = Wire.read()<<8;
+	ptr->mag_y += tmp;
+
+	tmp = Wire.read();
+	ptr->mag_z = Wire.read()<<8;
+	ptr->mag_z += tmp;
+
+	//GYRO OFFSETS
+	tmp = Wire.read();
+	ptr->gyr_x = Wire.read()<<8; 
+	ptr->gyr_x += tmp;
+                             
+	tmp = Wire.read();
+	ptr->gyr_y = Wire.read()<<8;
+	ptr->gyr_y += tmp;
+                             
+	tmp = Wire.read();
+	ptr->gyr_z = Wire.read()<<8;
+	ptr->gyr_z += tmp;
+
+	//ACCEL RADIUS
+	tmp = Wire.read();
+	ptr->acc_rad = Wire.read()<<8;
+	ptr->acc_rad += tmp;
+
+	//MAG RADIUS
+	tmp = Wire.read();
+	ptr->mag_rad = Wire.read()<<8;
+	ptr->mag_rad += tmp;
 }
 
 void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure into the compass
 {
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
-	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_CONFIG);
+	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
 
-	writeRegister(BNO_ADDR, ACC_OFFSET_X_MSB_ADDR, (ptr->acc_x)>>8);
-	writeRegister(BNO_ADDR, ACC_OFFSET_X_LSB_ADDR, (ptr->acc_x)&B11111111);
-	writeRegister(BNO_ADDR, ACC_OFFSET_Y_MSB_ADDR, (ptr->acc_y)>>8);
-	writeRegister(BNO_ADDR, ACC_OFFSET_Y_LSB_ADDR, (ptr->acc_y)&B11111111);
-	writeRegister(BNO_ADDR, ACC_OFFSET_Z_MSB_ADDR, (ptr->acc_z)>>8);
-	writeRegister(BNO_ADDR, ACC_OFFSET_Z_LSB_ADDR, (ptr->acc_z)&B11111111);
+	writeRegister(ACC_OFFSET_X_MSB_ADDR, (ptr->acc_x)>>8);
+	writeRegister(ACC_OFFSET_X_LSB_ADDR, (ptr->acc_x)&B11111111);
+	writeRegister(ACC_OFFSET_Y_MSB_ADDR, (ptr->acc_y)>>8);
+	writeRegister(ACC_OFFSET_Y_LSB_ADDR, (ptr->acc_y)&B11111111);
+	writeRegister(ACC_OFFSET_Z_MSB_ADDR, (ptr->acc_z)>>8);
+	writeRegister(ACC_OFFSET_Z_LSB_ADDR, (ptr->acc_z)&B11111111);
 
-	writeRegister(BNO_ADDR, MAG_OFFSET_X_MSB_ADDR, (ptr->mag_x)>>8);
-	writeRegister(BNO_ADDR, MAG_OFFSET_X_LSB_ADDR, (ptr->mag_x)&B11111111);
-	writeRegister(BNO_ADDR, MAG_OFFSET_Y_MSB_ADDR, (ptr->mag_y)>>8);
-	writeRegister(BNO_ADDR, MAG_OFFSET_Y_LSB_ADDR, (ptr->mag_y)&B11111111);
-	writeRegister(BNO_ADDR, MAG_OFFSET_Z_MSB_ADDR, (ptr->mag_z)>>8);
-	writeRegister(BNO_ADDR, MAG_OFFSET_Z_LSB_ADDR, (ptr->mag_z)&B11111111);
+	writeRegister(MAG_OFFSET_X_MSB_ADDR, (ptr->mag_x)>>8);
+	writeRegister(MAG_OFFSET_X_LSB_ADDR, (ptr->mag_x)&B11111111);
+	writeRegister(MAG_OFFSET_Y_MSB_ADDR, (ptr->mag_y)>>8);
+	writeRegister(MAG_OFFSET_Y_LSB_ADDR, (ptr->mag_y)&B11111111);
+	writeRegister(MAG_OFFSET_Z_MSB_ADDR, (ptr->mag_z)>>8);
+	writeRegister(MAG_OFFSET_Z_LSB_ADDR, (ptr->mag_z)&B11111111);
 
-	writeRegister(BNO_ADDR, GYR_OFFSET_X_MSB_ADDR, (ptr->gyr_x)>>8);
-	writeRegister(BNO_ADDR, GYR_OFFSET_X_LSB_ADDR, (ptr->gyr_x)&B11111111);
-	writeRegister(BNO_ADDR, GYR_OFFSET_Y_MSB_ADDR, (ptr->gyr_y)>>8);
-	writeRegister(BNO_ADDR, GYR_OFFSET_Y_LSB_ADDR, (ptr->gyr_y)&B11111111);
-	writeRegister(BNO_ADDR, GYR_OFFSET_Z_MSB_ADDR, (ptr->gyr_z)>>8);
-	writeRegister(BNO_ADDR, GYR_OFFSET_Z_LSB_ADDR, (ptr->gyr_z)&B11111111);
+	writeRegister(GYR_OFFSET_X_MSB_ADDR, (ptr->gyr_x)>>8);
+	writeRegister(GYR_OFFSET_X_LSB_ADDR, (ptr->gyr_x)&B11111111);
+	writeRegister(GYR_OFFSET_Y_MSB_ADDR, (ptr->gyr_y)>>8);
+	writeRegister(GYR_OFFSET_Y_LSB_ADDR, (ptr->gyr_y)&B11111111);
+	writeRegister(GYR_OFFSET_Z_MSB_ADDR, (ptr->gyr_z)>>8);
+	writeRegister(GYR_OFFSET_Z_LSB_ADDR, (ptr->gyr_z)&B11111111);
 
-	writeRegister(BNO_ADDR, ACC_RADIUS_MSB_ADDR, (ptr->acc_rad)>>8);
-	writeRegister(BNO_ADDR, ACC_RADIUS_LSB_ADDR, (ptr->acc_rad)&B11111111);
-	writeRegister(BNO_ADDR, MAG_RADIUS_MSB_ADDR, (ptr->mag_rad)>>8);
-	writeRegister(BNO_ADDR, MAG_RADIUS_LSB_ADDR, (ptr->mag_rad)&B11111111);
+	writeRegister(ACC_RADIUS_MSB_ADDR, (ptr->acc_rad)>>8);
+	writeRegister(ACC_RADIUS_LSB_ADDR, (ptr->acc_rad)&B11111111);
+	writeRegister(MAG_RADIUS_MSB_ADDR, (ptr->mag_rad)>>8);
+	writeRegister(MAG_RADIUS_LSB_ADDR, (ptr->mag_rad)&B11111111);
 
-	writeRegister(BNO_ADDR, OPR_MODE_ADDR, OPR_MODE_NDOF);
-	delay(19);
+	writeRegister(OPR_MODE_ADDR, OPR_MODE_NDOF);
+	delay(7);
 }
 
 void BNO::getCalibStat(struct calibStat *ptr)	//gets current calibration status
 {
-	if(readRegister(BNO_ADDR, PAGE_ID_ADDR) != 0) writeRegister(BNO_ADDR, PAGE_ID_ADDR, 0);
-
-	ptr->sys = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B11000000)>>6;
-	ptr->gyr = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B00110000)>>4;
-	ptr->acc = (readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B00001100)>>2;
-	ptr->mag = readRegister(BNO_ADDR, CALIB_STAT_ADDR)&B00000011;
+	uint8_t tmp = readRegister(CALIB_STAT_ADDR);
+	ptr->sys = (tmp&B11000000)>>6;
+	ptr->gyr = (tmp&B00110000)>>4;
+	ptr->acc = (tmp&B00001100)>>2;
+	ptr->mag = tmp&B00000011;
 }
