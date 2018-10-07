@@ -75,6 +75,8 @@ class BNO
 		void loadOffsets(unsigned int address);
 		void startBNO(uint8_t impact, bool forward);
 		void serialPrintCalibStat();
+		void setReference();
+		int16_t getRLHeading();
 	private:
 		struct sysInfo
 		{
@@ -124,6 +126,7 @@ class BNO
 			int16_t acc_rad;
 			int16_t mag_rad;
 		} _offsetData;
+    int16_t _reference;
 		void writePhase(uint8_t regaddr);
 		uint8_t readRegister(uint8_t regaddr);
 		uint16_t readRegister16(uint8_t regaddr);
