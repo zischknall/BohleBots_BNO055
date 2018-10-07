@@ -15,12 +15,16 @@
 
 **REQUIRED** `startBNO(impact, forward)` enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode. Impact accepts an integer from 0-255 and regulates the threshold for the impact detection. Forward accepts a bool and enables interrupt pin forwarding when true.
 
-### New with v1.1
-`setReference()` saves the curren heading as a reference for the relative heading
+## New with v1.1
+
+### New Functions
+`setReference()` saves the current heading as a reference for the relative heading
 
 `getRLHeading()` outputs current heading relative to the reference point (from 180 to -180) as a 16-bit signed integer
 
-## TO-DO
-- [x] Add interrupt pin forwarding
-- [x] Add heading relative to a point
-- [x] Customisable EEPROM address
+### Faster average execution times
+`getImpact()` **Before v1.1:** 400µs **Now:** 240µs
+`getHeading()` **Before v1.1:** 600µs **Now:** 290µs **Adafruit Library:** 1130µs
+`isCalibrated()` **Before v1.1:** 1000µs **Now:** 240µs
+`saveOffsets()` **Before v1.1:** 4500µs **Now:** 1400µs
+`loadOffsets()` **Before v1.1:** 46000µs **Now:** 37400µs
