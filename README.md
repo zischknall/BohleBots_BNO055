@@ -1,7 +1,7 @@
 # BohleBots_BNO055
 
 ## Description
-This library is intended for the BNO055 9-axis absolute orientation sensor. This library makes using the BNO055 as a fast and simple compass possible. It provides a functions for reading the heading and the heading relative to a point. It also provides functions for detecting an impact as well as saving and loading sensor offsets. 
+This library is intended for the BNO055 9-axis absolute orientation sensor. With this library you can use your BNO055 as fast and simple compass. It provides functions for reading the heading and the heading relative to a point. It also provides functions for detecting an impact as well as saving and loading sensor offsets. 
 
 ## Public Functions
 `getHeading()` outputs the current heading as a 16-bit signed integer.
@@ -27,7 +27,11 @@ This library is intended for the BNO055 9-axis absolute orientation sensor. This
 
 ### Faster average execution times
 `getImpact()` **Before v1.1:** 400µs **Now:** 240µs
+
 `getHeading()` **Before v1.1:** 600µs **Now:** 290µs **Adafruit Library:** 1130µs
+
 `isCalibrated()` **Before v1.1:** 1000µs **Now:** 240µs
+
 `saveOffsets()` **Before v1.1:** 4500µs **Now:** 1400µs
+
 `loadOffsets()` **Before v1.1:** 46000µs **Now:** 37400µs
