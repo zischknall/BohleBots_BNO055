@@ -106,14 +106,14 @@ void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and 
 
 /***** Private Functions *****/
 
-void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
+inline void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
 {
 	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
 	Wire.endTransmission();
 }
 
-uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
+inline uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 {
 	uint8_t value = 0;
 	writePhase(regaddr);
@@ -123,7 +123,7 @@ uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 	return value;
 }
 
-uint16_t BNO::readRegister16(uint8_t regaddr)
+inline uint16_t BNO::readRegister16(uint8_t regaddr)
 {
 	uint16_t value = 0;
 	uint8_t tmp = 0;
@@ -136,7 +136,7 @@ uint16_t BNO::readRegister16(uint8_t regaddr)
 	return value;
 }
 
-void BNO::writeRegister(uint8_t regaddr, uint8_t value)	//writes byte to a register
+inline void BNO::writeRegister(uint8_t regaddr, uint8_t value)	//writes byte to a register
 {
 	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(regaddr);
@@ -233,7 +233,7 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 	writeRegister(MAG_RADIUS_LSB_ADDR, (ptr->mag_rad)&B11111111);
 
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_NDOF);
-	delay(19);
+	delay(7);
 }
 
 void BNO::getCalibStat(struct calibStat *ptr)	//gets current calibration status
