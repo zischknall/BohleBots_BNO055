@@ -61,12 +61,23 @@ void BNO::saveOffsets(unsigned int address)	//saves offset structure into eeprom
 {
 	getOffsets(&_offsetData);
 	EEPROM.put(address, _offsetData);
+	_offsetCache = _offsetData;
+	_cached = true;
 }
 
 void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eeprom at byte 100 upwards and loads the offsets onto the compass
 {
+	if(!_cached)
+	{
 	EEPROM.get(address, _offsetData);
 	setOffsets(&_offsetData);
+	_offsetCache = _offsetData;
+	_cached = true;
+	}
+	else
+	{
+	setOffsets(&_offsetCache);
+	}
 }
 
 void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
@@ -216,31 +227,34 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
 
-	writeRegister(ACC_OFFSET_X_MSB_ADDR, (ptr->acc_x)>>8);
-	writeRegister(ACC_OFFSET_X_LSB_ADDR, (ptr->acc_x)&B11111111);
-	writeRegister(ACC_OFFSET_Y_MSB_ADDR, (ptr->acc_y)>>8);
-	writeRegister(ACC_OFFSET_Y_LSB_ADDR, (ptr->acc_y)&B11111111);
-	writeRegister(ACC_OFFSET_Z_MSB_ADDR, (ptr->acc_z)>>8);
-	writeRegister(ACC_OFFSET_Z_LSB_ADDR, (ptr->acc_z)&B11111111);
+	Wire.beginTransmission(BNO_ADDR);                               
+	Wire.write(ACC_OFFSET_X_LSB_ADDR);
+	Wire.write((ptr->acc_x)&B11111111);
+	Wire.write((ptr->acc_x)>>8);
+	Wire.write((ptr->acc_y)&B11111111);
+	Wire.write((ptr->acc_y)>>8);
+	Wire.write((ptr->acc_z)&B11111111);
+	Wire.write((ptr->acc_z)>>8);
+  
+	Wire.write((ptr->mag_x)&B11111111);
+	Wire.write((ptr->mag_x)>>8);
+	Wire.write((ptr->mag_y)&B11111111);
+	Wire.write((ptr->mag_y)>>8);
+	Wire.write((ptr->mag_z)&B11111111);
+	Wire.write((ptr->mag_z)>>8);
 
-	writeRegister(MAG_OFFSET_X_MSB_ADDR, (ptr->mag_x)>>8);
-	writeRegister(MAG_OFFSET_X_LSB_ADDR, (ptr->mag_x)&B11111111);
-	writeRegister(MAG_OFFSET_Y_MSB_ADDR, (ptr->mag_y)>>8);
-	writeRegister(MAG_OFFSET_Y_LSB_ADDR, (ptr->mag_y)&B11111111);
-	writeRegister(MAG_OFFSET_Z_MSB_ADDR, (ptr->mag_z)>>8);
-	writeRegister(MAG_OFFSET_Z_LSB_ADDR, (ptr->mag_z)&B11111111);
+	Wire.write((ptr->gyr_x)&B11111111);
+	Wire.write((ptr->gyr_x)>>8);
+	Wire.write((ptr->gyr_y)&B11111111);
+	Wire.write((ptr->gyr_y)>>8);
+	Wire.write((ptr->gyr_z)&B11111111);
+	Wire.write((ptr->gyr_z)>>8);
 
-	writeRegister(GYR_OFFSET_X_MSB_ADDR, (ptr->gyr_x)>>8);
-	writeRegister(GYR_OFFSET_X_LSB_ADDR, (ptr->gyr_x)&B11111111);
-	writeRegister(GYR_OFFSET_Y_MSB_ADDR, (ptr->gyr_y)>>8);
-	writeRegister(GYR_OFFSET_Y_LSB_ADDR, (ptr->gyr_y)&B11111111);
-	writeRegister(GYR_OFFSET_Z_MSB_ADDR, (ptr->gyr_z)>>8);
-	writeRegister(GYR_OFFSET_Z_LSB_ADDR, (ptr->gyr_z)&B11111111);
-
-	writeRegister(ACC_RADIUS_MSB_ADDR, (ptr->acc_rad)>>8);
-	writeRegister(ACC_RADIUS_LSB_ADDR, (ptr->acc_rad)&B11111111);
-	writeRegister(MAG_RADIUS_MSB_ADDR, (ptr->mag_rad)>>8);
-	writeRegister(MAG_RADIUS_LSB_ADDR, (ptr->mag_rad)&B11111111);
+	Wire.write((ptr->acc_rad)&B11111111);
+	Wire.write((ptr->acc_rad)>>8);
+  	Wire.write((ptr->mag_rad)&B11111111);
+  	Wire.write((ptr->mag_rad)>>8);
+	Wire.endTransmission();
 
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_NDOF);
 	delay(7);

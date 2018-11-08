@@ -126,7 +126,9 @@ class BNO
 			int16_t acc_rad;
 			int16_t mag_rad;
 		} _offsetData;
-    int16_t _reference;
+		struct calibOffsets _offsetCache = {};
+		bool _cached = false;
+    		int16_t _reference;
 		void writePhase(uint8_t regaddr);
 		uint8_t readRegister(uint8_t regaddr);
 		uint16_t readRegister16(uint8_t regaddr);
