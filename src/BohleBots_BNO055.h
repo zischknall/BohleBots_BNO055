@@ -77,6 +77,8 @@ class BNO
 		void serialPrintCalibStat();
 		void setReference();
 		int16_t getRLHeading();
+		int16_t getHeadingAuto(unsigned int addr);
+		int16_t getRLHeadingAuto(unsigned int addr);
 	private:
 		struct sysInfo
 		{

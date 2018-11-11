@@ -8,3 +8,5 @@ startBNO	KEYWORD2
 serialPrintCalibStat	KEYWORD2
 setReference	KEYWORD2
 getRLHeading	KEYWORD2
+getRLHeadingAuto	KEYWORD2
+getHeadingAuto	KEYWORD2

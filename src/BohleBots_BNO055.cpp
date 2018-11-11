@@ -125,6 +125,26 @@ int16_t BNO::getRLHeading()
 	return (((getHeading()-_reference)+180)%360)-180;
 }
 
+int16_t BNO::getHeadingAuto(unsigned int addr)
+{
+	if(getImpact())
+	{
+		loadOffsets(addr);
+		while(getHeading()==1);
+	}
+	return getHeading();
+}
+
+int16_t BNO::getRLHeadingAuto(unsigned int addr)
+{
+	if(getImpact())
+	{
+		loadOffsets(addr);
+		while(getHeading()==1);
+	}
+	return getRLHeading();
+}
+
 /***** Private Functions *****/
 
 inline void BNO::writePhase(uint8_t regaddr)	//Write Phase needed to tell from which address we want to read
