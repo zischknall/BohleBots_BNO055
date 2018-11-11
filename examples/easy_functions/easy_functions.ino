@@ -1,9 +1,9 @@
 /*
+ * 
+ *    This example sketch shows you how to use the library with the getHeadingAuto(address) function, which detects impacts and loads offsets values from the provided eeprom address automatically.
+ *    Keep in mind, that you still need to manually save correct offset values into eeprom with saveOffsets(address).
  *
- *	This example sketch shows you how to manually save offset values into eeprom, detect if an impact occurred, load offsets from the eeprom and give out a heading.
- *
-*/
-
+ */
 
 #include <BohleBots_BNO055.h>
 #include <Wire.h> //include wire.h for i2c communication
@@ -28,12 +28,6 @@ void setup()
 
 void loop() 
 {
-  if(bno.getImpact()) //check if an high_g event occured (impact)
-  {
-    Serial.println("Impact Detected!");
-    bno.loadOffsets(100);  //if yes load the calibration values saved in eeprom onto the bno
-    while(bno.getHeading()==1);	//discard the first output from the bno because its most likely junk
-  }
-  Serial.println(bno.getHeading(), DEC);  //give out the current heading
+  Serial.println(bno.getHeadingAuto(100), DEC);  //give out the current heading (this function automatically reloads the offset values stored at the eeprom address provided)
   delay(1000);
 }
