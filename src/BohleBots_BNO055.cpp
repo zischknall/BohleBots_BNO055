@@ -122,7 +122,7 @@ void BNO::setReference()
 
 int16_t BNO::getRLHeading()
 {
-	return (((getHeading()-_reference)+180)%360)-180;
+	return (((getHeading()-_reference)+540)%360)-180;
 }
 
 int16_t BNO::getHeadingAuto(unsigned int addr)
