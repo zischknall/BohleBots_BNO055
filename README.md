@@ -1,12 +1,18 @@
 # BohleBots_BNO055
 
 ## Description
-This library is intended for the BNO055 9-axis absolute orientation sensor. With this library you can use your BNO055 as a fast and simple compass. It provides functions for reading the heading and the heading relative to a point. It also provides functions for detecting an impact as well as saving and loading sensor offsets. 
+This library is intended for the BNO055 9-axis absolute orientation sensor. With this library you can use your BNO055 as a fast and simple compass. It provides functions for reading the heading of the compass and circumventing the automatic recalibration of the sensor on impacts. It was designed to be simple and faster than the Adafruit library for the BNO055.
 
-## Public Functions
-`getHeading()` outputs the current heading as a 16-bit signed integer.
+## Functions
+**`startBNO(impact, forward)`** enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode. Impact accepts an integer from 0-255 and regulates the threshold for the impact detection. Forward accepts a bool and enables interrupt pin forwarding when true.
 
-`getImpact()` returns true if a High-G interrupt occurred.
+`getHeadingAuto(address)` outputs the current heading as an 16-bit signed integer and automatically reloads the calibration offsets stored in the specified eeprom address if an impact occurred.
+
+`getRLHeadingAuto(address)` outputs the current heading relative to the reference point (from 180 to -180) as an 16-bit signed integer and automatically reloads the calibration offsets stored in the specified eeprom address if an impact occurred.
+
+`getHeading()` outputs the current heading as an 16-bit signed integer.
+
+`getImpact()` returns true if an High-G interrupt (impact) occurred.
 
 `isCalibrated()` returns true if everything on the BNO055 is on the highest calibration level.
 
@@ -16,22 +22,9 @@ This library is intended for the BNO055 9-axis absolute orientation sensor. With
 
 `loadOffsets(address)` gets offset data saved in EEPROM at the specified address and writes it to the BNO055.
 
-**REQUIRED** `startBNO(impact, forward)` enables you to use the compass by enabling High-G interrupt and putting it into NDOF fusion output mode. Impact accepts an integer from 0-255 and regulates the threshold for the impact detection. Forward accepts a bool and enables interrupt pin forwarding when true.
+`setReference()` saves the current point as a reference for the relative heading.
 
-## New with v1.1
+`getRLHeading()` outputs current heading relative to the reference point (from 180 to -180) as an 16-bit signed integer.
 
-### New Functions
-`setReference()` saves the current heading as a reference for the relative heading
-
-`getRLHeading()` outputs current heading relative to the reference point (from 180 to -180) as a 16-bit signed integer
-
-### Faster average execution times
-`getImpact()` **Before v1.1:** 400µs **Now:** 240µs
-
-`getHeading()` **Before v1.1:** 600µs **Now:** 290µs **Adafruit Library:** 1130µs
-
-`isCalibrated()` **Before v1.1:** 1000µs **Now:** 240µs
-
-`saveOffsets()` **Before v1.1:** 4500µs **Now:** 1400µs
-
-`loadOffsets()` **Before v1.1:** 46000µs **Now:** 37400µs
+### Average execution times
+**`getHeading()`:** 290µs **Adafruit Library:** 1130µs
