@@ -71,6 +71,7 @@ class BNO
 		int16_t getHeading();
 		bool getImpact();
 		bool isCalibrated();
+		uint8_t getCalibration();
 		void saveOffsets(unsigned int address);
 		void loadOffsets(unsigned int address);
 		void startBNO(uint8_t impact, bool forward);
