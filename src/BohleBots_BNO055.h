@@ -63,7 +63,7 @@
 /***** PAGE 1 *****/
 
 #define INT_EN_ADDR 0x10
-#define ACC_INT_Settings_ADDR 0x12
+#define ACC_INT_SETTINGS_ADDR 0x12
 #define ACC_HG_DURATION_ADDR 0x13
 #define ACC_HG_THRES_ADDR 0x14
 #define INT_MSK_ADDR 0x1F

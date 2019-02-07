@@ -114,7 +114,7 @@ void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and 
 
 	writeRegister(INT_EN_ADDR, B00100000);
 	writeRegister(INT_MSK_ADDR, B00000000);
-	writeRegister(ACC_INT_Settings_ADDR, B01100000);
+	writeRegister(ACC_INT_SETTINGS_ADDR, B01100000);
 	writeRegister(ACC_HG_DURATION_ADDR, 1);
 	writeRegister(ACC_HG_THRES_ADDR, impact);
 	if(forward)
