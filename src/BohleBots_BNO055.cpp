@@ -33,7 +33,21 @@ int16_t BNO::getHeading()	//reads the lSB and MSB of the EUL_HEADING and outputs
 {
 	int16_t heading = 0;
 	heading = readRegister16(EUL_HEADING_LSB_ADDR);
-	return (heading/16)+1;
+	return (heading/16);
+}
+
+int16_t BNO::getRoll()
+{
+	int16_t roll = 0;
+	roll = readRegister16(EUL_ROLL_LSB_ADDR);
+	return (roll/16);
+}
+
+int16_t BNO::getPitch()
+{
+	int16_t pitch = 0;
+	pitch = readRegister16(EUL_PITCH_LSB_ADDR);
+	return (pitch/16);
 }
 
 bool BNO::getImpact()	//reads the INT_STA Register to check if a High_G event occurred
@@ -230,13 +244,13 @@ void BNO::getOffsets(struct calibOffsets *ptr)
 
 	//GYRO OFFSETS
 	tmp = Wire.read();
-	ptr->gyr_x = Wire.read()<<8; 
+	ptr->gyr_x = Wire.read()<<8;
 	ptr->gyr_x += tmp;
-                             
+
 	tmp = Wire.read();
 	ptr->gyr_y = Wire.read()<<8;
 	ptr->gyr_y += tmp;
-                             
+
 	tmp = Wire.read();
 	ptr->gyr_z = Wire.read()<<8;
 	ptr->gyr_z += tmp;
@@ -257,7 +271,7 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
 
-	Wire.beginTransmission(BNO_ADDR);                               
+	Wire.beginTransmission(BNO_ADDR);
 	Wire.write(ACC_OFFSET_X_LSB_ADDR);
 	Wire.write((ptr->acc_x)&B11111111);
 	Wire.write((ptr->acc_x)>>8);
@@ -265,7 +279,7 @@ void BNO::setOffsets(struct calibOffsets *ptr)	//writes given offset structure i
 	Wire.write((ptr->acc_y)>>8);
 	Wire.write((ptr->acc_z)&B11111111);
 	Wire.write((ptr->acc_z)>>8);
-  
+
 	Wire.write((ptr->mag_x)&B11111111);
 	Wire.write((ptr->mag_x)>>8);
 	Wire.write((ptr->mag_y)&B11111111);

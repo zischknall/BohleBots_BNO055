@@ -55,6 +55,10 @@
 //DATA
 #define EUL_HEADING_LSB_ADDR 0x1A
 #define EUL_HEADING_MSB_ADDR 0x1B
+#define EUL_ROLL_LSB_ADDR 0x1C
+#define EUL_ROLL_MSB_ADDR 0x1D
+#define EUL_PTCH_LSB_ADDR 0x1E
+#define EUL_PITCH_MSB_ADDR 0x1F
 
 /***** PAGE 1 *****/
 
@@ -80,6 +84,8 @@ class BNO
 		int16_t getRLHeading();
 		int16_t getHeadingAuto(unsigned int addr);
 		int16_t getRLHeadingAuto(unsigned int addr);
+		int16_t getPitch();
+		int16_t getRoll();
 	private:
 		struct sysInfo
 		{
@@ -115,7 +121,7 @@ class BNO
 			uint8_t mag;
 			uint8_t acc;
 		} _testData;
-		struct calibOffsets 
+		struct calibOffsets
 		{
 			int16_t acc_x;
 			int16_t acc_y;
