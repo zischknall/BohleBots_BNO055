@@ -57,7 +57,7 @@
 #define EUL_HEADING_MSB_ADDR 0x1B
 #define EUL_ROLL_LSB_ADDR 0x1C
 #define EUL_ROLL_MSB_ADDR 0x1D
-#define EUL_PTCH_LSB_ADDR 0x1E
+#define EUL_PITCH_LSB_ADDR 0x1E
 #define EUL_PITCH_MSB_ADDR 0x1F
 
 /***** PAGE 1 *****/
