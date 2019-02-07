@@ -65,7 +65,7 @@ bool BNO::isCalibrated()	//Gets the latest calibration values and does a bitwise
 uint8_t BNO::getCalibration()
 {
 	getCalibStat(&_calibData);
-	uint8_t tmp;
+	uint8_t tmp = 0;
 	tmp += _calibData.sys<<6;
 	tmp += _calibData.gyr<<4;
 	tmp += _calibData.acc<<2;
