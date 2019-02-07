@@ -70,6 +70,7 @@ uint8_t BNO::getCalibration()
 	tmp += _calibData.gyr<<4;
 	tmp += _calibData.acc<<2;
 	tmp += _calibData.mag;
+	return tmp;
 }
 
 void BNO::serialPrintCalibStat()	//gets the latest calibration values and prints them via serial
