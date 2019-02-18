@@ -12,9 +12,15 @@ This library is intended for the BNO055 9-axis absolute orientation sensor. With
 
 `getHeading()` outputs the current heading as an 16-bit signed integer.
 
+`getRoll()` outputs the current roll as an 16-bit signed integer.
+
+`getPitch()` outputs the current pitch as an 16-bit signed integer.
+
 `getImpact()` returns true if an high-G interrupt (impact) occurred.
 
 `isCalibrated()` returns true if every sensors on the BNO055 has reached complete calibration.
+
+`getCalibration()` returns all for calibration values in one byte, each taking two bytes.
 
 `serialPrintCalibStat()` prints the current calibration levels via serial. Established serial connection required.
 
