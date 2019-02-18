@@ -186,7 +186,7 @@ inline uint8_t BNO::readRegister(uint8_t regaddr)	//reads byte from a register
 {
 	uint8_t value = 0;
 	writePhase(regaddr);
-	Wire.requestFrom(BNO_ADDR,1,true);
+	Wire.requestFrom(BNO_ADDR, 1, (int)true);
 	while(Wire.available() < 1);
 	value = Wire.read();
 	return value;
@@ -197,7 +197,7 @@ inline uint16_t BNO::readRegister16(uint8_t regaddr)
 	uint16_t value = 0;
 	uint8_t tmp = 0;
 	writePhase(regaddr);
-	Wire.requestFrom(BNO_ADDR,2,true);
+	Wire.requestFrom(BNO_ADDR, 2, (int)true);
 	while(Wire.available() < 2);
 	tmp = Wire.read();
 	value = Wire.read()<<8;
@@ -217,7 +217,7 @@ void BNO::getOffsets(struct calibOffsets *ptr)
 {
 	uint8_t tmp = 0;
 	writePhase(ACC_OFFSET_X_LSB_ADDR);
-	Wire.requestFrom(BNO_ADDR, 22, true);
+	Wire.requestFrom(BNO_ADDR, 22, (int)true);
 	while(Wire.available() < 22);
 
 	//ACCEL OFFSETS
