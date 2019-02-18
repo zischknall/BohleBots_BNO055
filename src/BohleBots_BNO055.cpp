@@ -86,6 +86,9 @@ void BNO::saveOffsets(unsigned int address)	//saves offset structure into eeprom
 {
 	getOffsets(&_offsetData);
 	EEPROM.put(address, _offsetData);
+#ifdef ESP32
+	EEPROM.commit();
+#endif
 	_offsetCache = _offsetData;
 	_cached = true;
 }
