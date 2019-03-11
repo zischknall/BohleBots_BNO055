@@ -110,12 +110,12 @@ void BNO::loadOffsets(unsigned int address)	//loads offsets structure from eepro
 
 void BNO::startBNO(uint8_t impact, bool forward)	//enables High_g Interrupt and puts the Compass into NDOF fusion mode
 {
-	//Enable High-G Interrupt
 	writeRegister(PAGE_ID_ADDR, 0);
 	writeRegister(OPR_MODE_ADDR, OPR_MODE_CONFIG);
 	delay(19);
 	writeRegister(PAGE_ID_ADDR, 1);
-
+	//Enable High-G Interrupt
+	writeRegister(PAGE_ID_ADDR, 1);
 	writeRegister(INT_EN_ADDR, B00100000);
 	writeRegister(INT_MSK_ADDR, B00000000);
 	writeRegister(ACC_INT_SETTINGS_ADDR, B01100000);

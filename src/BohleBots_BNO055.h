@@ -62,6 +62,7 @@
 
 /***** PAGE 1 *****/
 
+#define ACC_CONFIG_ADDR 0x08
 #define INT_EN_ADDR 0x10
 #define ACC_INT_SETTINGS_ADDR 0x12
 #define ACC_HG_DURATION_ADDR 0x13
